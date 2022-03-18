@@ -6,6 +6,7 @@ let serviceCount1=[]
 let serviceCount2=[]
 let serviceCount3=[]
 let serviceList= []
+let currentCount=[]
 const initQueue = async ()=>{
     const service = await Workflow.find({})
     service.forEach(elem=> serviceList.push(elem.name))
@@ -43,6 +44,14 @@ customerRouter.get('/api/services', async (req,res)=>{
     let serviceList= []
     service.forEach(elem=> serviceList.push(elem.name))
     res.json(serviceList)
+})
+
+customerRouter.get('/api/customer', (req, res)=>{
+    let currentCount=[] 
+    currentCount.push(serviceCount1[0])
+    currentCount.push(serviceCount2[0])
+    currentCount.push(serviceCount3[0])
+    res.json(currentCount)
 })
 
 customerRouter.post('/api/customer',async (req,res)=>{
