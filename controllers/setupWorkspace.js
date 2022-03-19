@@ -27,6 +27,12 @@ const Workflow = require('../models/workflow')
     setupWorkspaceRouter.put('/', async (req,res)=>{
         console.log(req.body.name)
         const {oldName, name} = req.body
+        const compare = await Workflow.findOne({name})
+        if(compare){
+            return response.status(401).json({
+                error: 'The Service is already exist'
+            })
+        }
         const filter= {"name": oldName}
         const workflow = await Workflow.findOneAndUpdate(filter, req.body, {
             new: true,
