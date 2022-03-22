@@ -47,19 +47,7 @@ customerRouter.get('/api/services', async (req,res)=>{
             serviceListGlobal.push(elem.name)
         }
     })
-    res.json(serviceList)
-})
-
-customerRouter.get('/api/customer', async (req, res)=>{
-    let currentCount=[] 
-    let serviceList=[]
-    const service = await Workflow.find({})
-    service.forEach(elem => serviceList.push(elem.name))
-    for (elem of serviceList){
-        const count= await Customer.count({services: elem})
-        currentCount.push(count)
-    }
-    res.json(currentCount)
+    res.json(service)
 })
 
 customerRouter.post('/api/customer',async (req,res)=>{

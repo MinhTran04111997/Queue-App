@@ -30,7 +30,7 @@ app.use(middleware.requestLogger)
 app.use('/api/login', loginRouter)
 app.use('/api/users', usersRouter)
 app.use('',customerRouter)
-app.use('/api/workspace',workspaceRouter)
+app.use('/api/workspace/getbyID',workspaceRouter)
 app.use('/api/workspace',setupWorkspaceRouter)
 app.use(express.static(path.join(__dirname, 'static')));
 //app.use(middleware.unknownEndpoint)

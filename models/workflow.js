@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 
 const workflowSchema = mongoose.Schema({
         name: String,
-        currentNumber: Number
+        currentNumber: Number,
+        isActive: Boolean
 })
 
 workflowSchema.set('toJSON', {

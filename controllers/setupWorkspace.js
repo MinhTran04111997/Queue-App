@@ -1,10 +1,28 @@
 const setupWorkspaceRouter = require('express').Router()
 const Workflow = require('../models/workflow')
+const Customer= require('../models/customer')
+const { compareSync } = require('bcrypt')
 
     
     setupWorkspaceRouter.get('/', async(req,res)=>{
+        let currentCount=[] 
+        let serviceList=[]
+        let isActiveList = []
         const workflowList= await Workflow.find({})
-        res.json(workflowList)
+        workflowList.forEach(elem => {
+            serviceList.push(elem.name)
+            isActiveList.push(elem.isActive)
+        })
+        for (elem of serviceList){
+        const count= await Customer.count({services: elem})
+        currentCount.push(count)
+        }
+        const response ={
+            workflowList,
+            currentCount,
+            isActiveList
+        }
+        res.json(response)
     })
 
     setupWorkspaceRouter.post('/', async (req,res)=>{
@@ -19,13 +37,13 @@ const Workflow = require('../models/workflow')
         const workflow = new Workflow({
             name, 
             currentNumber,
+            isActive: true
         })
         const saveWorksapce = await workflow.save()
         res.status(201).json(saveWorksapce)
     })
 
     setupWorkspaceRouter.put('/', async (req,res)=>{
-        console.log(req.body.name)
         const {oldName, name} = req.body
         const compare = await Workflow.findOne({name})
         if(compare){
@@ -40,6 +58,22 @@ const Workflow = require('../models/workflow')
           })
           if(workflow){
             res.status(200).json({ workflow })
+          }else{
+            return response.status(401).json({
+                error: 'Can not found the service'
+            })
+          }
+    })
+
+    setupWorkspaceRouter.put('/toggle/change', async (req, res)=>{
+        const {id, toggle} = req.body
+        const service= await Workflow.findOneAndUpdate({_id: id}, {isActive: toggle}, {
+            new: true,
+            runValidators: true,
+        })
+        console.log(service)
+        if(service){
+            res.status(200).json({ service })
           }else{
             return response.status(401).json({
                 error: 'Can not found the service'

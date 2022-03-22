@@ -5,12 +5,19 @@ const Customer= require('../models/customer')
 workspaceRouter.get('/:id', async (req,res)=>{
     const id = req.params.id
     const service= await Workflow.findOne({_id: id})
+    const name= service.name
+    const totalQueue= await Customer.count({services: name })
+    const response ={
+        service,
+        totalQueue
+    }
+    console.log(totalQueue)
     if(!service){
         return res.status(401).json({
             error: 'Can not find service'
-          })
+        })
     }
-    res.status(200).json(service)
+    res.status(200).json(response)
 })
 
 workspaceRouter.put('/:id', async(req,res)=>{
