@@ -33,7 +33,7 @@ app.use('',customerRouter)
 app.use('/api/workspace/getbyID',workspaceRouter)
 app.use('/api/workspace',setupWorkspaceRouter)
 app.use(express.static(path.join(__dirname, 'static')));
-app.use(middleware.unknownEndpoint)
+//app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
 module.exports = app

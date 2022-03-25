@@ -34,6 +34,5 @@ const errorHandler = (error, request, response, next) => {
 
 module.exports = {
   requestLogger,
-  unknownEndpoint,
   errorHandler
 }
