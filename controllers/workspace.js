@@ -1,8 +1,25 @@
 const workspaceRouter = require('express').Router()
 const Workflow= require('../models/workflow')
 const Customer= require('../models/customer')
+const jwt = require('jsonwebtoken')
+ 
+const getTokenFrom = request => {
+    const authorization = request.get('authorization')
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+      return authorization.substring(7)
+    }
+    return null
+  }
+const verifyToken = request =>{
+    const token = getTokenFrom(request)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' })
+    } 
+}
 
 workspaceRouter.get('/:id', async (req,res)=>{
+    verifyToken(req)
     const id = req.params.id
     const service= await Workflow.findOne({_id: id})
     const name= service.name
@@ -21,6 +38,7 @@ workspaceRouter.get('/:id', async (req,res)=>{
 })
 
 workspaceRouter.put('/:id', async(req,res)=>{
+    verifyToken(req)
     const id = req.params.id
     const validator= await Workflow.findOne({_id: id})
     const name= validator.name

@@ -2,9 +2,29 @@ const setupWorkspaceRouter = require('express').Router()
 const Workflow = require('../models/workflow')
 const Customer= require('../models/customer')
 const { compareSync } = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
-    
+const getTokenFrom = request => {
+    const authorization = request.get('authorization')
+    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+      return authorization.substring(7)
+    }
+    return null
+  }
+const verifyToken = request =>{
+    const token = getTokenFrom(request)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token missing or invalid' })
+    } 
+}
+/**
+ * at the endpoint /api/workspce
+ * get all the service with totalQueue(count from db in model Customer)
+ * and service name list and the status for isActive for each service 
+ *   */    
     setupWorkspaceRouter.get('/', async(req,res)=>{
+        verifyToken(req)
         let currentCount=[] 
         let serviceList=[]
         let isActiveList = []
@@ -25,7 +45,11 @@ const { compareSync } = require('bcrypt')
         res.json(response)
     })
 
+/**
+ * add new services, can not add more than 3 services
+ */
     setupWorkspaceRouter.post('/', async (req,res)=>{
+        verifyToken(req)
         const workflowList= await Workflow.find({})
         if(workflowList.length>2){
             return res.status(400).json({
@@ -42,8 +66,14 @@ const { compareSync } = require('bcrypt')
         const saveWorksapce = await workflow.save()
         res.status(201).json(saveWorksapce)
     })
-
+/**
+ * edit and service, if the service was not found on the
+ * list of customer, the total queue will be reset to 0,
+ * the already exist service will response with the total
+ * queue found in db.
+ */
     setupWorkspaceRouter.put('/', async (req,res)=>{
+        verifyToken(req)
         const {oldName, name} = req.body
         const compare = await Workflow.findOne({name})
         if(compare){
@@ -64,8 +94,11 @@ const { compareSync } = require('bcrypt')
             })
           }
     })
-
+/**
+ * update the isActive status 
+ */
     setupWorkspaceRouter.put('/toggle/change', async (req, res)=>{
+        verifyToken(req)
         const {id, toggle} = req.body
         const service= await Workflow.findOneAndUpdate({_id: id}, {isActive: toggle}, {
             new: true,
