@@ -1,8 +1,12 @@
 const mongoose = require('mongoose')
 
 const workflowSchema = mongoose.Schema({
-        name: String,
+        name: {
+          type: String,
+          require: true
+        },
         currentNumber: Number,
+        description: String,
         isActive: Boolean
 })
 

@@ -56,11 +56,12 @@ const verifyToken = request =>{
                 error: 'Can not add more than 3 services'
             })
         }
-        const {name} = req.body
+        const {name, description} = req.body
         const currentNumber=0
         const workflow = new Workflow({
             name, 
             currentNumber,
+            description,
             isActive: true
         })
         const saveWorksapce = await workflow.save()

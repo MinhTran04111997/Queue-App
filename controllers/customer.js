@@ -40,14 +40,14 @@ initQueue()
 
 customerRouter.get('/api/services', async (req,res)=>{
     let serviceList=[]
-    const service = await Workflow.find({})
-    service.forEach(elem=> {
+    const services = await Workflow.find({})
+    services.forEach(elem=> {
         serviceList.push(elem.name)
         if(serviceListGlobal.length<3){
             serviceListGlobal.push(elem.name)
         }
     })
-    res.json(service)
+    res.json(services)
 })
 
 customerRouter.post('/api/customer',async (req,res)=>{
