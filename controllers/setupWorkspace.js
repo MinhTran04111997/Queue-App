@@ -77,7 +77,7 @@ const verifyToken = request =>{
         const {oldName, name} = req.body
         const compare = await Workflow.findOne({name})
         if(compare){
-            return response.status(401).json({
+            return response.status(404).json({
                 error: 'The Service is already exist'
             })
         }
@@ -89,7 +89,7 @@ const verifyToken = request =>{
           if(workflow){
             res.status(200).json({ workflow })
           }else{
-            return response.status(401).json({
+            return response.status(404).json({
                 error: 'Can not found the service'
             })
           }
@@ -108,7 +108,7 @@ const verifyToken = request =>{
         if(service){
             res.status(200).json({ service })
           }else{
-            return response.status(401).json({
+            return response.status(404).json({
                 error: 'Can not found the service'
             })
           }
