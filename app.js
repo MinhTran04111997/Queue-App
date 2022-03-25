@@ -34,7 +34,7 @@ app.use('/api/workspace/getbyID',workspaceRouter)
 app.use('/api/workspace',setupWorkspaceRouter)
 app.use(express.static(path.join(__dirname, 'static')));
 app.get('*',(req, res) => {
-  res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  res.sendFile(path.resolve(__dirname,'build','index.html'));
 });
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
