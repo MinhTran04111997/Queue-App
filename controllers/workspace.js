@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
  
 const getTokenFrom = request => {
     const authorization = request.get('authorization')
+    console.log(authorization)
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
       return authorization.substring(7)
     }
@@ -46,7 +47,7 @@ workspaceRouter.put('/:id', async(req,res)=>{
     const totalQueue= await Customer.count({services: name})
     console.log(totalQueue)
     if(validator.currentNumber >= totalQueue){
-        return res.status(401).json({
+        return res.status(404).json({
             error: 'Current Queue can not bigger than total Queue'
           })
     }
@@ -56,7 +57,7 @@ workspaceRouter.put('/:id', async(req,res)=>{
       })
     console.log(service)
     if(!service){
-        return res.status(401).json({
+        return res.status(404).json({
             error: 'Can not find service'
           })
     }

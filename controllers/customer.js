@@ -51,7 +51,7 @@ customerRouter.get('/api/services', async (req,res)=>{
 })
 
 customerRouter.post('/api/customer',async (req,res)=>{
-    const {phonenumber, services, verify} = req.body
+    const {phonenumber, services, verify, date} = req.body
     let checking = serviceListGlobal.find(elem => elem === services)
     if(!checking){
         if(verify ==0){
@@ -83,7 +83,6 @@ customerRouter.post('/api/customer',async (req,res)=>{
     if(verify ==2){
         ordernumber=serviceCount3.shift()+1
     }
-    const date= new Date
     const customer = new Customer({
         phonenumber,
         ordernumber,
