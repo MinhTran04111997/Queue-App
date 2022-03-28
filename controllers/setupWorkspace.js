@@ -34,15 +34,23 @@ const verifyToken = request =>{
             isActiveList.push(elem.isActive)
         })
         for (elem of serviceList){
-        const count= await Customer.count({services: elem})
+        const count= await Customer.find({date :{$gt: new Date()}}).count({services: elem})
         currentCount.push(count)
         }
+        console.log(currentCount)
         const response ={
             workflowList,
             currentCount,
             isActiveList
         }
         res.json(response)
+    })
+
+    setupWorkspaceRouter.get('/date', async (req, res)=>{
+        verifyToken(req)
+        const {service, date} = req.body
+        const count = await Customer.find({date:  date}).count({services: service})
+        res.json(count)
     })
 
 /**
