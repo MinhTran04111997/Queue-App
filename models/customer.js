@@ -8,7 +8,10 @@ const customerSchema = mongoose.Schema({
     },
   ordernumber: Number,
   services: String,
-  date: Date
+  date:{
+    type: Date,
+    required: true
+  } 
 })
 
 customerSchema.set('toJSON', {
