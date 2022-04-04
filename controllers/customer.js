@@ -56,16 +56,18 @@ customerRouter.get('/api/services', async (req,res)=>{
 const checkAvailability = async (req) => {
     const {phonenumber, services, date} = req.body
     const specificCustomer = await Customer.findOne({phonenumber: phonenumber, date: date, services: services})
-    console.log(specificCustomer)
     const service = await Workflow.findOne({name: services})
-    if(specificCustomer.ordernumber > service.currentNumber){
-       return false
+    if(specificCustomer && service){
+        if(specificCustomer.ordernumber > service.currentNumber){
+            return false
+         }else{
+             return true
+         }
     }else{
         return true
     }
 }
-
-const checkCurrentState = (verify)=>{
+const checkCurrentState = (verify, services)=>{
     let checking = serviceListGlobal.find(elem => elem === services)
     if(!checking){
         if(verify ==0){
@@ -89,11 +91,11 @@ const checkCurrentState = (verify)=>{
         }
     }
 }
-
 customerRouter.post('/api/customer',async (req,res)=>{
     const {phonenumber, services, verify, date} = req.body
-    checkCurrentState(verify)
-    const isEligible = checkAvailability(req)
+    checkCurrentState(verify, services)
+    const isEligible = await checkAvailability(req)
+    console.log(isEligible)
     if(isEligible){
         if(verify ==0){
             ordernumber=serviceCount1.shift()+1
@@ -115,7 +117,10 @@ customerRouter.post('/api/customer',async (req,res)=>{
         console.log(JSON.stringify(data))
         const test = await Zalo_api.zaloNumbercall(JSON.stringify(data))
         const savedCustomer = await customer.save()
-        res.status(201).json(savedCustomer)
+        const yourOrder= {
+            message: `register succesfully, your order number is: ${savedCustomer.ordernumber} for ${savedCustomer.date}`
+        }
+        res.status(201).json(yourOrder)
     }else{
         const errorMessage = 'Your order has already exist'
         res.status(200).json(errorMessage)
