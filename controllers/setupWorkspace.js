@@ -54,9 +54,10 @@ const verifyToken = request =>{
         let currentCount=[] 
         const workflowList= await Workflow.find({})
         const {date}= req.body
-        const dateFormat=format(new Date(date), 'MM-dd-yyyy')
+        let dateFormat=format(new Date(date), 'MM-dd-yyyy')
         const newDate = new Date(dateFormat)
         newDate.setDate(newDate.getDate()+1)
+        dateFormat=format(newDate,'MM-dd-yyyy')
         for(elem of workflowList){
             const count= await Customer.find({date: newDate}).count({services: elem.name})
             currentCount.push(count)
