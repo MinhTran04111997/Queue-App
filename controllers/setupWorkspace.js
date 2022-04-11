@@ -3,12 +3,15 @@ const Workflow = require('../models/workflow')
 const Customer= require('../models/customer')
 const { compareSync } = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const {format} = require('date-fns') 
+const { response } = require('express')
 
 const getTokenFrom = request => {
     const authorization = request.get('authorization')
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
       return authorization.substring(7)
     }
+
     return null
   }
 const verifyToken = request =>{
@@ -46,11 +49,24 @@ const verifyToken = request =>{
         res.json(response)
     })
 
-    setupWorkspaceRouter.get('/date', async (req, res)=>{
+    setupWorkspaceRouter.post('/getbyDate', async(req,res)=>{
         verifyToken(req)
-        const {service, date} = req.body
-        const count = await Customer.find({date:  date}).count({services: service})
-        res.json(count)
+        let currentCount=[] 
+        const workflowList= await Workflow.find({})
+        const {date}= req.body
+        const dateFormat=format(new Date(date), 'MM-dd-yyyy')
+        const newDate = new Date(dateFormat)
+        newDate.setDate(newDate.getDate()+1)
+        for(elem of workflowList){
+            const count= await Customer.find({date: newDate}).count({services: elem.name})
+            currentCount.push(count)
+        }
+        console.log(currentCount)
+        const response ={
+            currentCount,
+            dateFormat
+        }
+        res.json(response)
     })
 
 /**

@@ -3,7 +3,9 @@ const { compareSync } = require('bcrypt')
 const Customer = require('../models/customer')
 const Workflow = require('../models/workflow')
 const Zalo_api = require('../services/zalo_service')
+const {format} = require('date-fns') 
 require('express-async-errors')
+
 
 let serviceCount1=[]
 let serviceCount2=[]
@@ -54,8 +56,11 @@ customerRouter.get('/api/services', async (req,res)=>{
 })
 
 const checkAvailability = async (req) => {
-    const {phonenumber, services, date} = req.body
-    const specificCustomer = await Customer.findOne({phonenumber: phonenumber, date: date, services: services})
+    const {phonenumber, services, date} = req
+    const dateFormat=format(new Date(date), 'MM-dd-yyyy')
+    const newDate = new Date(dateFormat)
+    newDate.setDate(newDate.getDate()+1)
+    const specificCustomer = await Customer.findOne({phonenumber: phonenumber, date: newDate, services: services})
     const service = await Workflow.findOne({name: services})
     if(specificCustomer && service){
         if(specificCustomer.ordernumber > service.currentNumber){
@@ -93,8 +98,11 @@ const checkCurrentState = (verify, services)=>{
 }
 customerRouter.post('/api/customer',async (req,res)=>{
     const {phonenumber, services, verify, date} = req.body
+    const dateFormat=format(new Date(date), 'MM-dd-yyyy')
+    const newDate = new Date(dateFormat)
+    newDate.setDate(newDate.getDate()+1)
     checkCurrentState(verify, services)
-    const isEligible = await checkAvailability(req)
+    const isEligible = await checkAvailability(req.body)
     console.log(isEligible)
     if(isEligible){
         if(verify ==0){
@@ -110,19 +118,20 @@ customerRouter.post('/api/customer',async (req,res)=>{
             phonenumber,
             ordernumber,
             services,
-            date,
+            date: newDate
         })
         console.log(customer)
         const data = {"phone":phonenumber}
-        console.log(JSON.stringify(data))
         const test = await Zalo_api.zaloNumbercall(JSON.stringify(data))
         const savedCustomer = await customer.save()
         const yourOrder= {
-            message: `register succesfully, your order number is: ${savedCustomer.ordernumber} for ${savedCustomer.date}`
+            message: `register succesfully, your order number is: ${savedCustomer.ordernumber} for ${dateFormat}`
         }
         res.status(201).json(yourOrder)
     }else{
-        const errorMessage = 'Your order has already exist'
+        const errorMessage = {
+            message: 'Your order has already exist'
+        }
         res.status(200).json(errorMessage)
     }
         
