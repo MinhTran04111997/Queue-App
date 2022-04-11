@@ -33,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'static')))
 app.get('*',(req, res) => {
   res.sendFile(path.resolve(__dirname,'build','index.html'))
 })
+app.use(express.urlencoded({extended: true})); 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 module.exports = app
