@@ -98,9 +98,10 @@ const checkCurrentState = (verify, services)=>{
 }
 customerRouter.post('/api/customer',async (req,res)=>{
     const {phonenumber, services, verify, date} = req.body
-    const dateFormat=format(new Date(date), 'MM-dd-yyyy')
+    let dateFormat=format(new Date(date), 'MM-dd-yyyy')
     const newDate = new Date(dateFormat)
     newDate.setDate(newDate.getDate()+1)
+    dateFormat=format(newDate, 'MM-dd-yyyy')
     checkCurrentState(verify, services)
     const isEligible = await checkAvailability(req.body)
     console.log(isEligible)
