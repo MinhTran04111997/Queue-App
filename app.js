@@ -13,7 +13,7 @@ const logger = require('./utils/logger')
 const workspaceRouter = require('./controllers/workspace')
 const setupWorkspaceRouter = require('./controllers/setupWorkspace')
 const path = require('path')
-// const schedule = require('node-schedule')
+const schedule = require('node-schedule')
 
 logger.info('connecting to', config.MONGODB_URI)
 mongoose.connect(config.MONGODB_URI)
