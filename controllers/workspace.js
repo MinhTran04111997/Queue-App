@@ -2,7 +2,7 @@ const workspaceRouter = require('express').Router()
 const Workflow= require('../models/workflow')
 const Customer= require('../models/customer')
 const jwt = require('jsonwebtoken')
- 
+
 const getTokenFrom = request => {
     const authorization = request.get('authorization')
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
@@ -19,13 +19,12 @@ const verifyToken = request =>{
 }
 
 workspaceRouter.get('/:id', async (req,res)=>{
-    console.log(req.query)
     verifyToken(req)
-    const date = new Date(req.query.date) 
+    const date = new Date(req.query.date)
     const id = req.params.id
     const service= await Workflow.findOne({_id: id})
     const name= service.name
-    const totalQueue= await Customer.count({services: name, date: date})
+    const totalQueue= await Customer.count({services: name, date: { $gt: date }})
     const response ={
         service,
         totalQueue
@@ -41,12 +40,11 @@ workspaceRouter.get('/:id', async (req,res)=>{
 
 workspaceRouter.put('/:id', async(req,res)=>{
     verifyToken(req)
+    const date = new Date(req.query.date)
     const id = req.params.id
     const validator= await Workflow.findOne({_id: id})
     const name= validator.name
-    console.log(name)
     const totalQueue= await Customer.count({services: name})
-    console.log(totalQueue)
     if(validator.currentNumber >= totalQueue){
         return res.status(404).json({
             error: 'Current Queue can not bigger than total Queue'
@@ -56,13 +54,40 @@ workspaceRouter.put('/:id', async(req,res)=>{
         new: true,
         runValidators: true,
       })
-    console.log(service)
     if(!service){
         return res.status(404).json({
             error: 'Can not find service'
           })
     }
-    res.status(200).json(service)
+    const customer = await Customer.findOne({service: name, date: { $gt: date }, ordernumber: service.currentNumber })
+    console.log(customer)
+    let response = {}
+    if(customer){
+      response = {
+        customer: customer,
+        service: service
+      }
+    }else{
+      response={
+        service:service
+      }
+    }
+    res.status(200).json(response)
+})
+
+workspaceRouter.put('/reset/:id', async(req,res) => {
+  verifyToken(req)
+  const id = req.params.id
+  const service = await Workflow.findOneAndUpdate({_id: id}, {$set :{currentNumber: 0}}, {
+    new: true,
+    runValidators: true,
+  })
+  if(!service){
+    return res.status(404).json({
+        error: 'Can not find service'
+      })
+  }
+  res.status(200).json(service)
 })
 
 

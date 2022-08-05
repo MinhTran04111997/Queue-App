@@ -94,7 +94,7 @@ const checkCurrentState = (verify, services)=>{
     }
 }
 customerRouter.post('/api/customer',async (req,res)=>{
-    const {phonenumber, services, verify, date} = req.body
+    const {name, phonenumber, services, verify, date} = req.body
     const date1= new Date(date)
     const dateFormat=format(date1, 'MM-dd-yyyy')
     checkCurrentState(verify, services)
@@ -111,6 +111,7 @@ customerRouter.post('/api/customer',async (req,res)=>{
             ordernumber=serviceCount3.shift()+1
         }
         const customer = new Customer({
+            name,
             phonenumber,
             ordernumber,
             services,

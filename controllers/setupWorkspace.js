@@ -37,7 +37,7 @@ const verifyToken = request =>{
             isActiveList.push(elem.isActive)
         })
         for (elem of serviceList){
-        const count= await Customer.find({date :{$gt: new Date()}}).count({services: elem})
+        const count= await Customer.count({services: elem})
         currentCount.push(count)
         }
         console.log(currentCount)
@@ -55,7 +55,7 @@ const verifyToken = request =>{
         const workflowList= await Workflow.find({})
         const {date}= req.body
         const date1= new Date(date)
-        dateFormat=format(date1,'MM-dd-yyyy')
+        const dateFormat=format(date1,'MM-dd-yyyy')
         for(elem of workflowList){
             const count= await Customer.find({date: date}).count({services: elem.name})
             currentCount.push(count)
