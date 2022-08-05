@@ -13,7 +13,7 @@ const logger = require('./utils/logger')
 const workspaceRouter = require('./controllers/workspace')
 const setupWorkspaceRouter = require('./controllers/setupWorkspace')
 const path = require('path')
-const schedule = require('node-schedule')
+// const schedule = require('node-schedule')
 
 logger.info('connecting to', config.MONGODB_URI)
 mongoose.connect(config.MONGODB_URI)
@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'static')))
 app.get('*',(req, res) => {
   res.sendFile(path.resolve(__dirname,'build','index.html'))
 })
-schedule.scheduleJob('0 0 * * *', () => {Workflow.updateMany({}, {$set: {currentNumber : 0}}) })
+// schedule.scheduleJob('0 0 * * *', () => {Workflow.updateMany({}, {$set: {currentNumber : 0}}) })
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 module.exports = app
