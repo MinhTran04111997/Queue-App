@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
-    "build:ui": "rm -rf build && cd ~/Documents/queue_app_fe/queue_app && npm run build && cp -r build ~/Documents/queue_app",
+    "build:ui": "rm -rf build && cd ~/OneDrive/Desktop/Project_fe/Queue-app_front-end && npm run build && cp -r build ~/OneDrive/Desktop/Project/Queue-App_server",
     "deploy": "git push heroku master",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push heroku master && npm run deploy",
     "logs:prod": "heroku logs --tail",
