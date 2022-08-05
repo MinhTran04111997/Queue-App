@@ -12,6 +12,8 @@ let serviceCount2=[]
 let serviceCount3=[]
 let serviceListGlobal= []
 const initQueue = async ()=>{
+    const date1= new Date()
+    const dateFormat=format(date1, 'MM-dd-yyyy')
     serviceCount1=[]
     serviceCount2=[]
     serviceCount3=[]
@@ -19,7 +21,7 @@ const initQueue = async ()=>{
     service.forEach(elem=> serviceListGlobal.push(elem.name))
     let i=0
     for (elem of serviceListGlobal){
-        const count= await Customer.count({services: elem})
+        const count= await Customer.count({services: elem, date: dateFormat})
         if(i==0){
             serviceCount1.push(count)
         }
@@ -62,6 +64,7 @@ const checkAvailability = async (req) => {
     const specificCustomer = await Customer.findOne({phonenumber: phonenumber, date: date, services: services})
     console.log(specificCustomer)
     const service = await Workflow.findOne({name: services})
+    console.log(service)
     if(specificCustomer && service){
         if(specificCustomer.ordernumber > service.currentNumber){
             return false
