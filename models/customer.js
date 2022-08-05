@@ -9,10 +9,7 @@ const customerSchema = mongoose.Schema({
     },
   ordernumber: Number,
   services: String,
-  date:{
-    type: Date,
-    required: false
-  } 
+  date: String
 })
 
 customerSchema.set('toJSON', {

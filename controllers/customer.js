@@ -57,7 +57,10 @@ customerRouter.get('/api/services', async (req,res)=>{
 
 const checkAvailability = async (req) => {
     const {phonenumber, services, date} = req
+    console.log(phonenumber)
+    console.log(date)
     const specificCustomer = await Customer.findOne({phonenumber: phonenumber, date: date, services: services})
+    console.log(specificCustomer)
     const service = await Workflow.findOne({name: services})
     if(specificCustomer && service){
         if(specificCustomer.ordernumber > service.currentNumber){
@@ -122,12 +125,12 @@ customerRouter.post('/api/customer',async (req,res)=>{
         const test = await Zalo_api.zaloNumbercall(JSON.stringify(data))
         const savedCustomer = await customer.save()
         const yourOrder= {
-            message: `register succesfully, your order number is: ${savedCustomer.ordernumber} for ${dateFormat}`
+            message: `Đăng kí thành công, số thứ tự của bạn là: ${savedCustomer.ordernumber}, vào ngày: ${dateFormat}`
         }
         res.status(201).json(yourOrder)
     }else{
         const errorMessage = {
-            message: 'Your order has already exist'
+            message: 'Số điện thoại này đã được đăng kí và chưa đến lượt'
         }
         res.status(200).json(errorMessage)
     }

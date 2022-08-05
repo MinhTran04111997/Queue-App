@@ -20,11 +20,11 @@ const verifyToken = request =>{
 
 workspaceRouter.get('/:id', async (req,res)=>{
     verifyToken(req)
-    const date = new Date(req.query.date)
+    const date = req.query.date
     const id = req.params.id
     const service= await Workflow.findOne({_id: id})
     const name= service.name
-    const totalQueue= await Customer.count({services: name, date: { $gt: date }})
+    const totalQueue= await Customer.count({services: name, date: date})
     const response ={
         service,
         totalQueue
@@ -40,7 +40,7 @@ workspaceRouter.get('/:id', async (req,res)=>{
 
 workspaceRouter.put('/:id', async(req,res)=>{
     verifyToken(req)
-    const date = new Date(req.query.date)
+    const date = req.query.date
     const id = req.params.id
     const validator= await Workflow.findOne({_id: id})
     const name= validator.name
@@ -59,7 +59,7 @@ workspaceRouter.put('/:id', async(req,res)=>{
             error: 'Can not find service'
           })
     }
-    const customer = await Customer.findOne({service: name, date: { $gt: date }, ordernumber: service.currentNumber })
+    const customer = await Customer.findOne({service: name, date: date, ordernumber: service.currentNumber })
     console.log(customer)
     let response = {}
     if(customer){
