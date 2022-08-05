@@ -140,5 +140,5 @@ customerRouter.post('/api/customer',async (req,res)=>{
         
 })
 
-module.exports = customerRouter
+module.exports = {customerRouter, initQueue}
 
