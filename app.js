@@ -23,7 +23,6 @@ mongoose.connect(config.MONGODB_URI)
   .catch((error) => {
     logger.error('error connection to MongoDB:', error.message)
   })
-schedule.scheduleJob('0 0 * * *', () => {Workflow.updateMany({}, {$set: {currentNumber : 0}}) })
 app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())
@@ -37,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'static')))
 app.get('*',(req, res) => {
   res.sendFile(path.resolve(__dirname,'build','index.html'))
 })
+schedule.scheduleJob('0 0 * * *', () => {Workflow.updateMany({}, {$set: {currentNumber : 0}}) })
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 module.exports = app
