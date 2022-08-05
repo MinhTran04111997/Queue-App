@@ -19,16 +19,18 @@ const verifyToken = request =>{
 }
 
 workspaceRouter.get('/:id', async (req,res)=>{
+    console.log(req.query)
     verifyToken(req)
+    const date = new Date(req.query.date) 
     const id = req.params.id
     const service= await Workflow.findOne({_id: id})
     const name= service.name
-    const totalQueue= await Customer.count({services: name })
+    const totalQueue= await Customer.count({services: name, date: date})
     const response ={
         service,
         totalQueue
     }
-    console.log(totalQueue)
+    console.log(date)
     if(!service){
         return res.status(401).json({
             error: 'Can not find service'

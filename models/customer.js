@@ -10,7 +10,7 @@ const customerSchema = mongoose.Schema({
   services: String,
   date:{
     type: Date,
-    required: true
+    required: false
   } 
 })
 

@@ -57,10 +57,7 @@ customerRouter.get('/api/services', async (req,res)=>{
 
 const checkAvailability = async (req) => {
     const {phonenumber, services, date} = req
-    const dateFormat=format(new Date(date), 'MM-dd-yyyy')
-    const newDate = new Date(dateFormat)
-    newDate.setDate(newDate.getDate()+1)
-    const specificCustomer = await Customer.findOne({phonenumber: phonenumber, date: newDate, services: services})
+    const specificCustomer = await Customer.findOne({phonenumber: phonenumber, date: date, services: services})
     const service = await Workflow.findOne({name: services})
     if(specificCustomer && service){
         if(specificCustomer.ordernumber > service.currentNumber){
@@ -98,10 +95,8 @@ const checkCurrentState = (verify, services)=>{
 }
 customerRouter.post('/api/customer',async (req,res)=>{
     const {phonenumber, services, verify, date} = req.body
-    let dateFormat=format(new Date(date), 'MM-dd-yyyy')
-    const newDate = new Date(dateFormat)
-    newDate.setDate(newDate.getDate()+1)
-    dateFormat=format(newDate, 'MM-dd-yyyy')
+    const date1= new Date(date)
+    const dateFormat=format(date1, 'MM-dd-yyyy')
     checkCurrentState(verify, services)
     const isEligible = await checkAvailability(req.body)
     console.log(isEligible)
@@ -119,7 +114,7 @@ customerRouter.post('/api/customer',async (req,res)=>{
             phonenumber,
             ordernumber,
             services,
-            date: newDate
+            date: date
         })
         console.log(customer)
         const data = {"phone":phonenumber}
