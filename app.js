@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'static')))
 app.get('*',(req, res) => {
   res.sendFile(path.resolve(__dirname,'build','index.html'))
 })
-// schedule.scheduleJob('0 0 * * *', () => {Workflow.updateMany({}, {$set: {currentNumber : 0}}) })
+schedule.scheduleJob('0 0 * * *', () => {Workflow.updateMany({}, {$set: {currentNumber : 0}}) })
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 module.exports = app
