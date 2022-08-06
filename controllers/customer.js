@@ -59,8 +59,6 @@ customerRouter.get('/api/services', async (req,res)=>{
 
 const checkAvailability = async (req) => {
     const {phonenumber, services, date} = req
-    console.log(phonenumber)
-    console.log(date)
     const specificCustomer = await Customer.findOne({phonenumber: phonenumber, date: date, services: services})
     console.log(specificCustomer)
     const service = await Workflow.findOne({name: services})
@@ -101,8 +99,6 @@ const checkCurrentState = (verify, services)=>{
 }
 customerRouter.post('/api/customer',async (req,res)=>{
     const {name, phonenumber, services, verify, date} = req.body
-    const date1= new Date(date)
-    const dateFormat=format(date1, 'MM-dd-yyyy')
     checkCurrentState(verify, services)
     const isEligible = await checkAvailability(req.body)
     console.log(isEligible)
@@ -128,7 +124,7 @@ customerRouter.post('/api/customer',async (req,res)=>{
         const test = await Zalo_api.zaloNumbercall(JSON.stringify(data))
         const savedCustomer = await customer.save()
         const yourOrder= {
-            message: `Đăng kí thành công, số thứ tự của bạn là: ${savedCustomer.ordernumber}, vào ngày: ${dateFormat}`
+            message: `Đăng kí thành công, số thứ tự của bạn là: ${savedCustomer.ordernumber}, vào ngày: ${date}`
         }
         res.status(201).json(yourOrder)
     }else{

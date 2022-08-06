@@ -27,6 +27,8 @@ const verifyToken = request =>{
  * and service name list and the status for isActive for each service 
  *   */    
     setupWorkspaceRouter.get('/', async(req,res)=>{
+        const date= new Date()
+        const dateFormat=format(date, 'MM-dd-yyyy')
         verifyToken(req)
         let currentCount=[] 
         let serviceList=[]
@@ -37,7 +39,7 @@ const verifyToken = request =>{
             isActiveList.push(elem.isActive)
         })
         for (elem of serviceList){
-        const count= await Customer.count({services: elem})
+        const count= await Customer.count({services: elem, date: dateFormat})
         currentCount.push(count)
         }
         console.log(currentCount)
