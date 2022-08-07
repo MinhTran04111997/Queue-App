@@ -59,12 +59,12 @@ customerRouter.get('/api/services', async (req,res)=>{
 
 const checkAvailability = async (req) => {
     const {phonenumber, services, date} = req
-    const specificCustomer = await Customer.findOne({phonenumber: phonenumber, date: date, services: services})
+    const specificCustomer = await Customer.find({phonenumber: phonenumber, date: date, services: services}).sort({ordernumber: -1}).limit(1)
     console.log(specificCustomer)
     const service = await Workflow.findOne({name: services})
-    console.log(service)
-    if(specificCustomer && service){
-        if(specificCustomer.ordernumber > service.currentNumber){
+    console.log(service.currentNumber)
+    if(specificCustomer[0] && service){
+        if(specificCustomer[0].ordernumber > service.currentNumber){
             return false
          }else{
              return true
@@ -119,7 +119,6 @@ customerRouter.post('/api/customer',async (req,res)=>{
             services,
             date: date
         })
-        console.log(customer)
         const data = {"phone":phonenumber}
         const test = await Zalo_api.zaloNumbercall(JSON.stringify(data))
         const savedCustomer = await customer.save()

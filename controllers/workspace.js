@@ -44,7 +44,7 @@ workspaceRouter.put('/:id', async(req,res)=>{
     const id = req.params.id
     const validator= await Workflow.findOne({_id: id})
     const name= validator.name
-    const totalQueue= await Customer.count({services: name})
+    const totalQueue= await Customer.count({services: name, date: date})
     if(validator.currentNumber >= totalQueue){
         return res.status(404).json({
             error: 'Current Queue can not bigger than total Queue'
