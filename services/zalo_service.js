@@ -1,14 +1,27 @@
 const axios = require('axios')
-const BASE_URL= 'https://openapi.zalo.me/'
+const BASE_URL= 'https://oauth.zaloapp.com/v4/oa/access_token'
 
-const zaloNumbercall = async (data) =>{
+const zaloGetKey = async (data) =>{
     const config = {
-        headers: { access_token: process.env.ZALO_KEY },
+        headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded',
+            secret_key: process.env.ZALO_KEY,
+        },
     }
-    const path= 'v2.0/oa/getprofile?data='+data
-    const response= await axios.get(`${BASE_URL+path}`, config)
+    const response= await axios.post(BASE_URL,data, config)
     return response.data
 }
 
-module.exports ={zaloNumbercall}
+const zaloSentMessage = async (access_token, data) =>{
+    const config = {
+        headers: { 
+            'Content-Type': 'application/json',
+            "access_token": access_token
+        },
+    }
+    const response= await axios.post('https://business.openapi.zalo.me/message/template',data, config)
+    return response.data
+}
+
+module.exports ={zaloGetKey, zaloSentMessage}
 

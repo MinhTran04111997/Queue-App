@@ -14,6 +14,8 @@ const workspaceRouter = require('./controllers/workspace')
 const setupWorkspaceRouter = require('./controllers/setupWorkspace')
 const path = require('path')
 const schedule = require('node-schedule')
+const {zaloGetKey} = require('./services/zalo_service')
+const ZaloKey = require('./models/zaloKey')
 
 logger.info('connecting to', config.MONGODB_URI)
 mongoose.connect(config.MONGODB_URI)
@@ -27,6 +29,18 @@ app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())
 app.use(middleware.requestLogger)
+
+schedule.scheduleJob('0 0 * * *', async () => {
+  awaitWorkflow.updateMany({}, {$set: {currentNumber : 0}}) 
+  initQueue()
+  const refresh_token = await ZaloKey.findOne({})
+  const data = {
+    refresh_token: refresh_token.refresh_token,
+    app_id: process.env.ZALO_APP_ID
+  }
+  zaloGetKey(data)
+})
+
 app.use('/api/login', loginRouter)
 app.use('/api/users', usersRouter)
 app.use('',customerRouter)
@@ -36,10 +50,7 @@ app.use(express.static(path.join(__dirname, 'static')))
 app.get('*',(req, res) => {
   res.sendFile(path.resolve(__dirname,'build','index.html'))
 })
-schedule.scheduleJob('0 0 * * *', () => {
-  Workflow.updateMany({}, {$set: {currentNumber : 0}}) 
-  initQueue()
-})
+
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 module.exports = app

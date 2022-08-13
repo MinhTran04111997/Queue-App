@@ -60,7 +60,7 @@ workspaceRouter.put('/:id', async(req,res)=>{
           })
     }
     const customer = await Customer.findOne({service: name, date: date, ordernumber: service.currentNumber })
-    console.log(customer)
+    console.log(customer.id)
     let response = {}
     if(customer){
       response = {

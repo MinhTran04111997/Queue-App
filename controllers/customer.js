@@ -2,7 +2,8 @@ const customerRouter = require('express').Router()
 const { compareSync } = require('bcrypt')
 const Customer = require('../models/customer')
 const Workflow = require('../models/workflow')
-const Zalo_api = require('../services/zalo_service')
+const ZaloKey = require('../models/zaloKey')
+const {zaloSentMessage} = require('../services/zalo_service')
 const {format} = require('date-fns') 
 require('express-async-errors')
 
@@ -119,8 +120,20 @@ customerRouter.post('/api/customer',async (req,res)=>{
             services,
             date: date
         })
-        const data = {"phone":phonenumber}
-        const test = await Zalo_api.zaloNumbercall(JSON.stringify(data))
+        const zalo_accessToken = await ZaloKey.findOne({})
+        const newDate = new Date(date)
+        const dateFormat = format(newDate, 'dd/MM/yyyy')
+        const messageData = {
+            phone: phonenumber.replace('0','84'),
+            template_id: process.env.ZALO_TEMPLATE_ID,
+            template_data: {
+                service_name: services,
+                queue_number: ordernumber,
+                date: dateFormat
+            },
+            tracking_id: "tracking_id"
+        }
+        zaloSentMessage(zalo_accessToken.access_token, JSON.stringify(messageData)).then(response =>{console.log(response)})
         const savedCustomer = await customer.save()
         const yourOrder= {
             message: `Đăng kí thành công, số thứ tự của bạn là: ${savedCustomer.ordernumber}, vào ngày: ${date}`
@@ -134,6 +147,7 @@ customerRouter.post('/api/customer',async (req,res)=>{
     }
         
 })
+
 
 module.exports = {customerRouter, initQueue}
 
