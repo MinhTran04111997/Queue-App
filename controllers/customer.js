@@ -133,6 +133,7 @@ customerRouter.post('/api/customer',async (req,res)=>{
             },
             tracking_id: "tracking_id"
         }
+        console.log(process.env.ZALO_TEMPLATE_ID)
         zaloSentMessage(zalo_accessToken.access_token, JSON.stringify(messageData)).then(response =>{console.log(response)})
         const savedCustomer = await customer.save()
         const yourOrder= {
