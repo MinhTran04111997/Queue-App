@@ -31,14 +31,21 @@ app.use(express.json())
 app.use(middleware.requestLogger)
 
 schedule.scheduleJob('0 0 * * *', async () => {
-  awaitWorkflow.updateMany({}, {$set: {currentNumber : 0}}) 
+  await Workflow.updateMany({}, {$set: {currentNumber : 0}}) 
   initQueue()
   const refresh_token = await ZaloKey.findOne({})
   const data = {
     refresh_token: refresh_token.refresh_token,
     app_id: process.env.ZALO_APP_ID
   }
-  zaloGetKey(data)
+  zaloGetKey(data).then(response =>{
+    const zaloKey = new ZaloKey({
+      access_token: response.access_token,
+      refresh_token: response.refresh_token
+    })
+    const saved = await zaloKey.save()
+    console.log(saved)
+  })
 })
 
 app.use('/api/login', loginRouter)
