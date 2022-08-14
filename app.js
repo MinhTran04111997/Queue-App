@@ -38,7 +38,7 @@ schedule.scheduleJob('0 0 * * *', async () => {
     refresh_token: refresh_token.refresh_token,
     app_id: process.env.ZALO_APP_ID
   }
-  zaloGetKey(data).then(response =>{
+  zaloGetKey(data).then(async (response) =>{
     const zaloKey = new ZaloKey({
       access_token: response.access_token,
       refresh_token: response.refresh_token
